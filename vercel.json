@@ -1,10 +1,6 @@
 {
-  "version": 2,
-  "builds": [
-    { "src": "api/**/*", "use": "@vercel/node" }
-  ],
-  "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/", "dest": "/public/index.html" }
+  "rewrites": [
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/api/form", "destination": "/api/form.js" }
   ]
 }
