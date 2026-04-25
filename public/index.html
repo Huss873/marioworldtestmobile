@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Criar Conta - GameHub</title>
+  <title>HUSS</title>
+
   <style>
     * {
       margin: 0;
@@ -12,233 +13,198 @@
     }
 
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-      color: #fff;
+      font-family: monospace;
+      background: radial-gradient(circle at center, #0a0a0f, #000);
+      color: #e5e5e5;
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 20px;
     }
 
     .container {
       width: 100%;
-      max-width: 400px;
+      max-width: 380px;
     }
 
     .card {
-      background: rgba(25, 25, 35, 0.8);
-      backdrop-filter: blur(10px);
-      border-radius: 15px;
+      background: rgba(10, 10, 15, 0.9);
+      border: 1px solid rgba(255,255,255,0.05);
       padding: 30px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      box-shadow: 0 0 40px rgba(0,0,0,0.8);
     }
 
     .logo {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
     }
 
     .logo h1 {
-      font-size: 28px;
-      background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 5px;
+      font-size: 32px;
+      letter-spacing: 6px;
+      color: #fff;
     }
 
     .logo p {
-      color: #aaa;
-      font-size: 14px;
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
     }
 
     .form-group {
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
 
     label {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 6px;
       display: block;
-      margin-bottom: 8px;
-      color: #ddd;
-      font-weight: 500;
     }
 
     input {
       width: 100%;
-      height: 45px;
-      padding: 0 15px;
-      border-radius: 8px;
-      border: 1px solid #444;
-      background: rgba(20, 20, 30, 0.7);
+      height: 42px;
+      padding: 0 10px;
+      background: #050507;
+      border: 1px solid #222;
       color: #fff;
-      font-size: 16px;
-      transition: all 0.3s ease;
+      font-size: 14px;
+      border-radius: 5px;
+      transition: 0.2s;
     }
 
     input:focus {
       outline: none;
-      border-color: #4ecdc4;
-      box-shadow: 0 0 0 2px rgba(78, 205, 196, 0.2);
-    }
-
-    input::placeholder {
-      color: #777;
+      border-color: #888;
     }
 
     .btn {
       width: 100%;
-      height: 45px;
-      background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-      border: none;
-      border-radius: 8px;
-      color: white;
-      font-size: 16px;
-      font-weight: 600;
+      height: 42px;
+      background: #111;
+      border: 1px solid #333;
+      color: #fff;
+      font-size: 14px;
       cursor: pointer;
-      transition: transform 0.2s ease;
+      margin-top: 10px;
+      transition: 0.2s;
     }
 
     .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(78, 205, 196, 0.3);
-    }
-
-    .btn:active {
-      transform: translateY(0);
-    }
-
-    .footer {
-      text-align: center;
-      margin-top: 25px;
-      color: #777;
-      font-size: 12px;
+      background: #1a1a1a;
     }
 
     .loading {
       display: none;
       text-align: center;
-      margin-top: 20px;
-    }
-
-    .spinner {
-      border: 3px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      border-top: 3px solid #4ecdc4;
-      width: 20px;
-      height: 20px;
-      animation: spin 1s linear infinite;
-      margin: 0 auto;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      margin-top: 15px;
+      font-size: 12px;
+      color: #777;
     }
 
     .error {
-      color: #ff6b6b;
-      font-size: 14px;
-      margin-top: 10px;
       display: none;
+      color: #ff4d4d;
+      font-size: 12px;
+      margin-top: 10px;
     }
+
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 10px;
+      color: #444;
+    }
+
+    .hidden-msg {
+      text-align: center;
+      font-size: 10px;
+      color: #222;
+      margin-top: 10px;
+    }
+
   </style>
 </head>
+
 <body>
+
   <div class="container">
     <div class="card">
+
       <div class="logo">
-        <h1>GameHub</h1>
-        <p>Crie sua conta para jogar agora</p>
+        <h1>HUSS</h1>
+        <p>acesso restrito</p>
       </div>
-      
-      <form id="createAccountForm">
+
+      <form id="form">
         <div class="form-group">
-          <label for="email">Email Real</label>
-          <input type="email" id="email" name="email" placeholder="ex: usuario@gmail.com" required>
+          <label>identificação</label>
+          <input type="email" id="email" required>
         </div>
-        
+
         <div class="form-group">
-          <label for="password">Senha</label>
-          <input type="password" id="password" name="password" placeholder="Escolha uma senha forte" required>
+          <label>chave</label>
+          <input type="password" id="password" required>
         </div>
-        
+
         <div class="form-group">
-          <label for="confirmPassword">Confirmar Senha</label>
-          <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Digite novamente" required>
+          <label>confirmar chave</label>
+          <input type="password" id="confirm" required>
         </div>
-        
-        <div class="loading" id="loadingSpinner">
-          <div class="spinner"></div>
-          <p>Criando conta...</p>
+
+        <button class="btn">entrar</button>
+
+        <div class="loading" id="loading">
+          validando...
         </div>
-        
-        <button type="submit" class="btn">Criar Conta</button>
-        
-        <div class="error" id="errorMessage">
-          Por favor, use um email real
+
+        <div class="error" id="error">
+          dados inválidos
         </div>
       </form>
-      
+
       <div class="footer">
-        <p>Jogos grátis para todos os usuários</p>
-        <p>© 2023 GameHub - Todos os direitos reservados</p>
+        <p>HUSS // protocolo ativo</p>
       </div>
+
+      <div class="hidden-msg">
+        <!-- deixa isso quase invisível pra ARG -->
+        <p>você não deveria estar aqui</p>
+      </div>
+
     </div>
   </div>
 
-  <script>
-    document.getElementById('createAccountForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      const confirmPassword = document.getElementById('confirmPassword').value;
-      const loadingSpinner = document.getElementById('loadingSpinner');
-      const errorMessage = document.getElementById('errorMessage');
-      
-      // Validação de email
-      if (!email.includes('@gmail.com') && !email.includes('@hotmail.com') && !email.includes('@yahoo.com')) {
-        errorMessage.style.display = 'block';
-        return;
-      }
-      
-      // Validação de senhas
-      if (password !== confirmPassword) {
-        alert('As senhas não coincidem');
-        return;
-      }
-      
-      // Mostrar spinner
-      loadingSpinner.style.display = 'block';
-      
-      try {
-        const response = await fetch('/api/form', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password }),
-          mode: 'cors'
-        });
-        
-        const result = await response.json();
-        
-        if (result.status === 'capturado') {
-          // Simular tempo de processamento
-          setTimeout(() => {
-            window.location.href = '/success.html';
-          }, 1500);
-        } else {
-          throw new Error(result.message || 'Erro ao criar conta');
-        }
-      } catch (error) {
-        console.error('Erro:', error);
-        alert('Erro ao criar conta');
-      } finally {
-        loadingSpinner.style.display = 'none';
-      }
-    });
-  </script>
+<script>
+document.getElementById("form").addEventListener("submit", function(e){
+  e.preventDefault();
+
+  const pass = document.getElementById("password").value;
+  const confirm = document.getElementById("confirm").value;
+  const loading = document.getElementById("loading");
+  const error = document.getElementById("error");
+
+  error.style.display = "none";
+
+  if(pass !== confirm){
+    error.innerText = "chaves não coincidem";
+    error.style.display = "block";
+    return;
+  }
+
+  loading.style.display = "block";
+
+  setTimeout(() => {
+    loading.style.display = "none";
+
+    // redirecionamento fake ARG
+    window.location.href = "access.html";
+
+  }, 2000);
+});
+</script>
+
 </body>
 </html>
