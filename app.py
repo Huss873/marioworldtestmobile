@@ -1,30 +1,21 @@
-# app.py
-from flask import Flask, request, jsonify
+from fastapi import FastAPI, Request
 import logging
 import json
 
-app = Flask(__name__)
+app = FastAPI()
 
-# Configurar logging para Vercel
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-@app.route('/api/log', methods=['POST'])
-def log_data():
+@app.post("/api/log")
+async def log_data(request: Request):
     try:
-        data = request.get_json()
-        if not data:
-            return jsonify({"error": "Dados inválidos"}), 400
-        
-        # Registrar dados em logs do Vercel
+        data = await request.json()
         logging.info(f"Dados recebidos: {json.dumps(data)}")
-        
-        return jsonify({"status": "success"}), 200
+        return {"status": "success"}
     except Exception as e:
-        logging.error(f"Erro ao processar dados: {str(e)}")
-        return jsonify({"error": "Erro interno"}), 500
+        logging.error(f"Erro: {str(e)}")
+        return {"error": "Erro interno"}, 500
 
-if __name__ == '__main__':
-    app.run(debug=True)
+@app.get("/")
+async def root():
+    return {"message": "Servidor rodando"}
