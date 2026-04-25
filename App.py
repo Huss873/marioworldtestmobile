@@ -109,5 +109,12 @@ def cleanup():
 # Start cleanup thread
 threading.Thread(target=cleanup, daemon=True).start()
 
+# Main entry point
 if __name__ == '__main__':
+    try:
+        import pkg_resources
+    except ImportError:
+        # Fallback for missing pkg_resources
+        pass
+    
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8000)))
