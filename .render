@@ -1,0 +1,12 @@
+{
+  "services": [
+    {
+      "type": "web",
+      "name": "marioworldtestmobile",
+      "region": "oregon",
+      "runtime": "python",
+      "startCommand": "python app.py",
+      "buildCommand": "pip install -r requirements.txt"
+    }
+  ]
+}
